@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+
+  feedsync-api:
+    build:
+      dockerfile: Dockerfile.api
+    container_name: feedsync-api
+    environment:
+      - FIRESTORE_EMULATOR_HOST=firestore-local:8085
+      - FIREBASE_AUTH_EMULATOR_HOST=firestore-local:9099
+    ports:
+      - "8080:8080"
+    networks:
+      - feedsync-network
+    restart: always
+    depends_on:
+      - firestore-local
+
+  firestore-local:
+    build:
+      dockerfile: Dockerfile.firestore
+    container_name: firestore-local
+    ports:
+      - "8085:8085"   # Firestore
+      - "9099:9099"   # Auth
+      - "9005:9005"   # Realtime Database
+      - "4000:4000"   # Emulator UI
+    networks:
+      - feedsync-network
+    # volumes:
+    #   - ./firebase-local:/app  
+    restart: unless-stopped
+
+networks:
+  feedsync-network:
+    driver: bridge

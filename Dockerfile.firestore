@@ -1,0 +1,27 @@
+# Usa imagem Eclipse Temurin (imagem oficial JDK) para Java 21
+FROM eclipse-temurin:21-jdk
+
+# Instala Node.js 20 e utilitários
+RUN apt-get update && apt-get install -y curl gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && apt-get clean
+
+# Instala Firebase CLI
+RUN npm install -g firebase-tools
+
+# Define pasta de trabalho
+WORKDIR /app
+
+# Cria diretório pra export/import dos dados
+# RUN mkdir -p /app/exported-dev-data && chmod -R 777 /app/exported-dev-data
+
+
+# Copia configs do Firebase
+COPY ./firebase-local/firebase.json ./firebase-local/database.rules.json ./
+
+# Expõe portas padrão dos emuladores
+EXPOSE 8085 9099 9005 4000
+
+# Sobe os emuladores com import/export configurados
+CMD ["firebase", "emulators:start", "--project=feedsync-teste-local-3a1c2", "--only=firestore,auth,database", "--import=./exported-dev-data", "--export-on-exit=./exported-dev-data", "--debug"]
+
