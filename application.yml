@@ -5,3 +5,5 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
+jwt:
+  secret: ${JWT_SECRET:IVy3wDtLYZBHxexS6cLusowwYOvP76iN}

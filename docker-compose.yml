@@ -9,6 +9,7 @@ services:
     environment:
       - FIRESTORE_EMULATOR_HOST=firestore-local:8085
       - FIREBASE_AUTH_EMULATOR_HOST=firestore-local:9099
+      - JWT_SECRET=IVy3wDtLYZBHxexS6cLusowwYOvP76iN
     ports:
       - "8080:8080"
     networks:
@@ -29,12 +30,9 @@ services:
     networks:
       - feedsync-network
     # volumes:
-    #   - ./firebase-local:/app  
+    #   - ./firebase-local:/app
     restart: unless-stopped
 
 networks:
   feedsync-network:
     driver: bridge
-
-jwt:
-  secret: "IVy3wDtLYZBHxexS6cLusowwYOvP76iN"

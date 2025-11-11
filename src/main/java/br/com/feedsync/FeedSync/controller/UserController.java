@@ -5,14 +5,11 @@ import br.com.feedsync.FeedSync.dto.UserRequest;
 import br.com.feedsync.FeedSync.dto.UserResponse;
 import br.com.feedsync.FeedSync.entity.User;
 import br.com.feedsync.FeedSync.mapper.UserMapper;
-import br.com.feedsync.FeedSync.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/users")

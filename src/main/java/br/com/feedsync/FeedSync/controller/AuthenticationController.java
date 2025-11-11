@@ -2,7 +2,6 @@ package br.com.feedsync.FeedSync.controller;
 
 import br.com.feedsync.FeedSync.dto.auth.LoginRequestDTO;
 import br.com.feedsync.FeedSync.dto.auth.LoginResponseDTO;
-import br.com.feedsync.FeedSync.entity.User;
 import br.com.feedsync.FeedSync.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -34,17 +33,9 @@ public class AuthenticationController {
 
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        org.springframework.security.core.userdetails.User userDetails =
-                (org.springframework.security.core.userdetails.User) auth.getPrincipal();
+        var userDetails = (UserDetails) auth.getPrincipal();
 
-        var springUser = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
-
-        var userDetails = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
-        String email = userDetails.getUsername();
-
-        var principal = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
-
-        var token = tokenService.generateToken((UserDetails) auth.getPrincipal());
+        var token = tokenService.generateToken(userDetails);
 
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
