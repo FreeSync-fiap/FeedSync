@@ -35,3 +35,6 @@ services:
 networks:
   feedsync-network:
     driver: bridge
+
+jwt:
+  secret: "IVy3wDtLYZBHxexS6cLusowwYOvP76iN"
