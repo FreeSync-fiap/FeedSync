@@ -17,6 +17,36 @@ services:
     depends_on:
       - firestore-local
 
+  report-service:
+    build:
+      dockerfile: Dockerfile.report-service
+    container_name: report-service
+    environment:
+      - FIRESTORE_EMULATOR_HOST=firestore-local:8085
+      - FIREBASE_AUTH_EMULATOR_HOST=firestore-local:9099
+    ports:
+      - "8081:8080"
+    networks:
+      - feedsync-network
+    restart: always
+    depends_on:
+      - firestore-local
+
+  notification-service:
+    build:
+      dockerfile: Dockerfile.notification-service
+    container_name: notification-service
+    environment:
+      - FIRESTORE_EMULATOR_HOST=firestore-local:8085
+      - FIREBASE_AUTH_EMULATOR_HOST=firestore-local:9099
+    ports:
+      - "8082:8080"
+    networks:
+      - feedsync-network
+    restart: always
+    depends_on:
+      - firestore-local
+
   firestore-local:
     build:
       dockerfile: Dockerfile.firestore
