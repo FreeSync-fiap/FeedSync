@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/users")
@@ -57,6 +56,5 @@ public class UserController {
         service.deleteUserById(id);
         return ResponseEntity.notFound().build();
     }
-
 
 }
