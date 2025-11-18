@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -44,4 +45,10 @@ public class FirebaseConfig {
             System.out.println("Firestore conectado com sucesso: " + db);
         }
     }
+
+    @Bean
+    public Firestore firestore() {
+        return FirestoreClient.getFirestore();
+    }
+
 }

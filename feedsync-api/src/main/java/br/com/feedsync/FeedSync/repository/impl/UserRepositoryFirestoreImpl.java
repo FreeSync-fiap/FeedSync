@@ -15,7 +15,11 @@ import java.util.concurrent.ExecutionException;
 @Repository
 public class UserRepositoryFirestoreImpl implements UserRepository {
 
-    private final Firestore db = FirestoreClient.getFirestore();
+    private final Firestore db;
+
+    public UserRepositoryFirestoreImpl(Firestore db) {
+        this.db = db;
+    }
 
     @Override
     public  User save(User user) {
