@@ -52,10 +52,4 @@ public class CourseController {
         Course updated = service.update(id, mapper.toEntity(request));
         return ResponseEntity.ok(mapper.toResponse(updated));
     }
-
-    @PostMapping("/{userId}/enroll/{courseId}")
-    public ResponseEntity<Void> enrollUser(@PathVariable String userId, @PathVariable String courseId) {
-        service.enrollUserInCourse(userId, courseId);
-        return ResponseEntity.noContent().build();
-    }
 }

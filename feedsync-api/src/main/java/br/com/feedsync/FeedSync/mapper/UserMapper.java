@@ -5,28 +5,29 @@ import br.com.feedsync.FeedSync.dto.UserResponse;
 import br.com.feedsync.FeedSync.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections; // Import para tratar listas vazias
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
 
-
     public User toEntity(UserRequest user) {
-
         User entity = new User();
-
         entity.setName(user.name());
         entity.setEmail(user.email());
         entity.setPassword(user.password());
         entity.setProfile(user.profile());
         entity.setEnrolledCourses(null);
-
         return entity;
-
     }
 
     public UserResponse toResponse(User user) {
+
+        List<String> courses = user.getEnrolledCourses() != null
+                ? user.getEnrolledCourses()
+                : Collections.emptyList();
+
         return new UserResponse(
                 user.getUserId(),
                 user.getName(),
@@ -34,11 +35,12 @@ public class UserMapper {
                 user.getProfile(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),
-                user.getActive()
+                user.getActive(),
+                courses
         );
     }
 
     public List<UserResponse> toResponseList(List<User> users) {
-        return  users.stream().map(this::toResponse).collect(Collectors.toList());
+        return users.stream().map(this::toResponse).collect(Collectors.toList());
     }
 }

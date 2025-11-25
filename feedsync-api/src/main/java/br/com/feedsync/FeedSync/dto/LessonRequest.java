@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 public record LessonRequest(
-        @Schema(example = "Introduction to Cloud Computing")
+        @Schema(example = "Lesson title")
         @NotBlank
         String lessonTitle,
 
-        @Schema(example = "Basic concepts about cloud...")
+        @Schema(example = "Lesson concepts")
         @NotBlank
         String description
 ) {}
