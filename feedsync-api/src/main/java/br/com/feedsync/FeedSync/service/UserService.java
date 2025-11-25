@@ -6,6 +6,7 @@ import br.com.feedsync.FeedSync.service.exceptions.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +54,21 @@ public class UserService {
 
     public List<User> findByField( String fieldName, Object value) {
         return repository.findByField(fieldName, value);
+    }
+
+    public void enrollUserInCourse(String userId, String courseId) {
+        User user = findUserById(userId);
+
+        if (user.getEnrolledCourses() == null) {
+            user.setEnrolledCourses(new ArrayList<>());
+        }
+
+        if (!user.getEnrolledCourses().contains(courseId)) {
+            user.getEnrolledCourses().add(courseId);
+            user.setUpdatedAt(new Date());
+
+            repository.save(user);
+        }
     }
 
 }

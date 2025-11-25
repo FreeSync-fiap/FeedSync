@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public record UserResponse(
@@ -24,15 +25,16 @@ public record UserResponse(
         @Schema(description = "Função/Perfil do usuário", example = "ADMIN", required = true)
         Profile profile,
 
-        @Schema(description = "Data de criação do usuário", example = "2025-09-06T22:15:30", required = true)
+        @Schema(description = "Data de criação do usuário", required = true)
         Date createdAt,
 
-        @Schema(description = "Data da última atualização do usuário", example = "2025-09-07T01:45:00", required = true)
+        @Schema(description = "Data da última atualização do usuário", required = true)
         Date lastUpdatedAt,
 
-        @Schema(description = "Indica se o usuário está ativo", example = "true", required = true)
-        Boolean active
+        @Schema(description = "Indica se o usuário está ativo", required = true)
+        Boolean active,
 
-
+        @Schema(description = "Lista de IDs dos cursos em que o aluno está matriculado", required = true)
+        List<String> enrolledCourses
 ) {
 }

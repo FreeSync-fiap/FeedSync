@@ -58,5 +58,13 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
+    @PostMapping("/{userId}/enroll/{courseId}")
+    public ResponseEntity<Void> enrollUser(
+            @PathVariable String userId,
+            @PathVariable String courseId
+    ) {
+        service.enrollUserInCourse(userId, courseId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
