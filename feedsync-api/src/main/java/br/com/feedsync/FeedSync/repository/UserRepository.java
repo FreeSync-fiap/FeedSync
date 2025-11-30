@@ -17,5 +17,6 @@ public interface UserRepository {
 
     List<User> findByField(String fieldName, Object value);
 
+    User findByEmail(String value);
 
 }

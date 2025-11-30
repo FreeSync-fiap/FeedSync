@@ -97,4 +97,28 @@ public class UserRepositoryFirestoreImpl implements UserRepository {
             throw new RuntimeException("Error to find user by field: " + fieldName, e);
         }
     }
+
+    @Override
+    public User findByEmail(String email) {
+        try {
+            var querySnapshot = db.collection("users")
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .get();
+
+            var users = querySnapshot.toObjects(User.class);
+
+            if (users.isEmpty()) {
+                return null; // ou lança um erro, você que manda
+            }
+
+            return users.get(0);
+
+        } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Error to find user by field: " + "email ", e);
+        }
+    }
+
 }

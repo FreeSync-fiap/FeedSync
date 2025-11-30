@@ -60,4 +60,17 @@ public class CourseService {
         existing.setUpdatedAt(new Date());
         return repository.save(existing);
     }
+
+    public Lesson findLessonById(Course course , String lessonId) {
+        if (lessonId == null || course.getLessons() == null) {
+            return null;
+        }
+
+        return course.getLessons()
+                .stream()
+                .filter(l -> lessonId.equals(l.getLessonId()))
+                .findFirst()
+                .orElse(null);
+    }
+
 }
