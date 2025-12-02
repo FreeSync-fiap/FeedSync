@@ -7,3 +7,9 @@ spring:
 
 jwt:
   secret: IVy3wDtLYZBHxexS6cLusowwYOvP76iN
+
+clients:
+  notification-service:
+    url: http://notification-service:8080
+  report-service:
+    url: http://report-service:8080
