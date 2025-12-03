@@ -1,5 +1,8 @@
 package br.com.feedsync.functions.notification_service;
 
+import br.com.feedsync.functions.notification_service.model.User;
+import br.com.feedsync.functions.notification_service.model.enums.Profile;
+import br.com.feedsync.functions.notification_service.repository.UserRepository;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
@@ -8,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NotificationServiceApplication implements HttpFunction {
 
@@ -18,17 +19,28 @@ public class NotificationServiceApplication implements HttpFunction {
     @Override
     public void service(HttpRequest request, HttpResponse response) throws Exception {
 
+        String feedbackId = request.getFirstQueryParameter("feedbackId")
+                .orElse(null);
+
+        if (feedbackId == null) {
+            response.getWriter().write("FeedbackId is required");
+            return;
+        }
+
         Firestore db = FirebaseConfig.getFirestore();
 
-        Map<String, Object> report = new HashMap<>();
+        UserRepository repository = new UserRepository(db);
 
-        report.put("teste", "NOTIFICATION FUNCIONANDO !!!");
+        var admins = repository.findByProfile(String.valueOf(Profile.ADMIN));
 
-        db.collection("notifications").add(report).get();
-        log.info("Notification salvo com sucesso no Firestore.");
+        for (User user : admins) {
+            log.info("Admin: " + user.getEmail());
+        }
+
+        log.info("Feeedback : " + feedbackId + " - IS URGENT");
 
         BufferedWriter writer = response.getWriter();
-        writer.write("Notification salvo com sucesso !!!");
+        writer.write("Feeedback : " + feedbackId + " IS URGENT");
 
     }
 }

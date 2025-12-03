@@ -17,12 +17,15 @@ public class FeedbackService {
     private final FeedbackRepository repository;
     private final UserRepository userRepository;
 
+    private final NotificationGatewayService notificationService;
+
     private final CourseService courseService;
 
 
-    public FeedbackService(FeedbackRepository repository, UserRepository userRepository, CourseService courseService) {
+    public FeedbackService(FeedbackRepository repository, UserRepository userRepository, NotificationGatewayService notificationService, CourseService courseService) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
         this.courseService = courseService;
     }
 
@@ -46,7 +49,6 @@ public class FeedbackService {
 
         Lesson lessonFind = courseService.findLessonById(courseFind , lessonId);
 
-        
         Context context = new Context();
         
         if (lessonFind != null) {
@@ -70,7 +72,13 @@ public class FeedbackService {
         feedback.setCreatedAt(now);
         feedback.setUpdatedAt(now);
 
-        return repository.save(feedback);
+        Feedback saved = repository.save(feedback);
+
+        if (saved.getUrgent()) {
+            notificationService.sendNotification(saved.getFeedbackId());
+        }
+
+        return saved;
 
     }
 

@@ -12,10 +12,8 @@ public class NotificationGatewayService {
         this.client = client;
     }
 
-    public String teste () {
-        return client.notification();
+    public String sendNotification (String feedbackId) {
+        return client.sendNotification(feedbackId);
     }
-
-
 
 }
