@@ -39,17 +39,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-
-                        .requestMatchers("/firestore/testar").permitAll()
-
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll() // Cadastro aberto
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
+
+                        .requestMatchers("/reports/**").hasAnyRole("ADMIN", "PROFESSOR")
+
+                        .requestMatchers(HttpMethod.POST, "/feedbacks").hasAnyRole("STUDENT", "ADMIN")
 
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
