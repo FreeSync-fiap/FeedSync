@@ -1,44 +1,44 @@
-package br.com.feedsync.functions.report_service;
+package br.com.feedsync.FeedSync.service;
 
-import br.com.feedsync.functions.report_service.model.*;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.functions.HttpFunction;
-import com.google.cloud.functions.HttpRequest;
-import com.google.cloud.functions.HttpResponse;
-import com.google.gson.Gson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import br.com.feedsync.FeedSync.entity.Feedback;
+import br.com.feedsync.FeedSync.entity.Report;
+import br.com.feedsync.FeedSync.entity.ReportCourseAverage;
+import br.com.feedsync.FeedSync.entity.ReportItem;
+import br.com.feedsync.FeedSync.repository.FeedbackRepository;
+import br.com.feedsync.FeedSync.repository.ReportRepository;
+import br.com.feedsync.FeedSync.service.exceptions.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReportServiceApplication implements HttpFunction {
+@Service
+public class ReportService {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportServiceApplication.class);
-    private static final Gson gson = new Gson();
+    private final ReportRepository reportRepository;
+    private final FeedbackRepository feedbackRepository;
 
-    @Override
-    public void service(HttpRequest request, HttpResponse response) throws Exception {
+    public ReportService(ReportRepository reportRepository, FeedbackRepository feedbackRepository) {
+        this.reportRepository = reportRepository;
+        this.feedbackRepository = feedbackRepository;
+    }
 
-        Firestore db = FirebaseConfig.getFirestore();
-        log.info("Iniciando geração de relatório semanal Serverless Function...");
+    public List<Report> findAll() {
+        return reportRepository.findAll();
+    }
 
-        List<Feedback> feedbacks = new ArrayList<>();
-        var querySnapshot = db.collection("feedbacks").get().get();
+    public Report findById(String id) {
+        return reportRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("report", "id", id));
+    }
 
-        for (QueryDocumentSnapshot document : querySnapshot) {
-            feedbacks.add(document.toObject(Feedback.class));
-        }
+    public Report generateReport() {
+        List<Feedback> feedbacks = feedbackRepository.findAll();
 
         if (feedbacks.isEmpty()) {
-            response.setStatusCode(HttpURLConnection.HTTP_NO_CONTENT);
-            response.getWriter().write("Nenhum feedback encontrado para processar.");
-            return;
+            throw new RuntimeException("Não há feedbacks para gerar relatório.");
         }
 
         double overallAverage = feedbacks.stream()
@@ -51,6 +51,7 @@ public class ReportServiceApplication implements HttpFunction {
                 .collect(Collectors.groupingBy(f -> f.getContext().getCourseId()));
 
         List<ReportCourseAverage> courseAverages = new ArrayList<>();
+
         for (var entry : feedbacksByCourse.entrySet()) {
             String courseId = entry.getKey();
             List<Feedback> courseFeedbacks = entry.getValue();
@@ -61,6 +62,7 @@ public class ReportServiceApplication implements HttpFunction {
                     .orElse(0.0);
 
             String courseName = courseFeedbacks.get(0).getContext().getCourseName();
+
             courseAverages.add(new ReportCourseAverage(courseId, courseName, avg));
         }
 
@@ -73,28 +75,22 @@ public class ReportServiceApplication implements HttpFunction {
 
         List<ReportItem> topComments = wordCounts.entrySet().stream()
                 .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
-                .limit(3)
+                .limit(3) // pega top 3
                 .map(e -> new ReportItem(e.getKey(), e.getValue().intValue()))
                 .collect(Collectors.toList());
 
         Report report = new Report();
-        report.setReportId("report_weekly_" + LocalDate.now().toString());
+        String reportId = "report_" + UUID.randomUUID().toString().substring(0, 8);
+        report.setReportId(reportId);
         report.setGeneratedAt(new Date());
-        report.setPeriodStartDate(getDateDaysAgo(7));
+        report.setPeriodStartDate(getDateDaysAgo(30)); // Exemplo: últimos 30 dias
         report.setPeriodEndDate(new Date());
         report.setTotalFeedbacksProcessed(feedbacks.size());
         report.setOverallAverageRating(overallAverage);
         report.setAverageByCourse(courseAverages);
         report.setRecurringComments(topComments);
 
-        db.collection("reports").document(report.getReportId()).set(report).get();
-
-        log.info("Relatório gerado e salvo: " + report.getReportId());
-
-        response.setStatusCode(HttpURLConnection.HTTP_OK);
-        response.setContentType("application/json");
-        BufferedWriter writer = response.getWriter();
-        writer.write(gson.toJson(report));
+        return reportRepository.save(report);
     }
 
     private Date getDateDaysAgo(int days) {
