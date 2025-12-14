@@ -1,21 +1,22 @@
 package br.com.feedsync.FeedSync.controller;
 
+import br.com.feedsync.FeedSync.controller.docs.FeedbackControllerDoc;
 import br.com.feedsync.FeedSync.dto.FeedbackRequest;
 import br.com.feedsync.FeedSync.dto.FeedbackResponse;
 import br.com.feedsync.FeedSync.entity.Feedback;
 import br.com.feedsync.FeedSync.mapper.FeedbackMapper;
-import br.com.feedsync.FeedSync.repository.FeedbackRepository;
 import br.com.feedsync.FeedSync.service.FeedbackService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/feedbacks")
-public class FeedbackController {
+public class FeedbackController implements FeedbackControllerDoc {
 
     private FeedbackService service;
     private FeedbackMapper mapper;
@@ -27,7 +28,7 @@ public class FeedbackController {
 
     @PostMapping
     public ResponseEntity<FeedbackResponse> create(
-            @RequestBody FeedbackRequest feedback,
+            @Validated @RequestBody FeedbackRequest feedback,
             @AuthenticationPrincipal UserDetails user
     ) {
         Feedback saved = service.create(

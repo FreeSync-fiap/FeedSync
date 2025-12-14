@@ -71,14 +71,14 @@ public class UserRepositoryFirestoreImpl implements UserRepository {
             var docRef = db.collection("users").document(userId);
             var snapshot = docRef.get().get();
 
-            if (!snapshot.exists()) {
-                throw new ResourceNotFoundException("user","userId",userId);
-            }
+//            if (!snapshot.exists()) {
+//                throw new ResourceNotFoundException("user","userId",userId);
+//            }
 
             docRef.update("active", false).get();
         } catch (ExecutionException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Error to delete user by ID", e);
+            throw new ResourceNotFoundException("user","userId",userId);
         }
     }
 

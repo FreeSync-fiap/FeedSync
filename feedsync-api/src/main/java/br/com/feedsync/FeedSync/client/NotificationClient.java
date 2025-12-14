@@ -1,9 +1,10 @@
 package br.com.feedsync.FeedSync.client;
 
 import br.com.feedsync.FeedSync.config.FeignClientConfig;
+import br.com.feedsync.FeedSync.dto.NotificationRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
         name = "notification-service",
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface NotificationClient {
 
-    @GetMapping("/")
-    String sendNotification(@RequestParam("feedbackId") String feedbackId);
+    @PostMapping("/")
+    String sendNotification(@RequestBody NotificationRequest request);
 
 }

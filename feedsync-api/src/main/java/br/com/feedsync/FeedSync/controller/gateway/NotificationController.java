@@ -1,10 +1,8 @@
 package br.com.feedsync.FeedSync.controller.gateway;
 
+import br.com.feedsync.FeedSync.dto.NotificationRequest;
 import br.com.feedsync.FeedSync.service.NotificationGatewayService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/notifications")
@@ -16,14 +14,14 @@ public class NotificationController {
         this.service = service;
     }
 
-    @GetMapping
-    public String teste(@RequestParam(required = true) String feedbackId) {
+    @PostMapping
+    public String send(@RequestBody NotificationRequest request) {
 
-        if (feedbackId == null || feedbackId.isBlank()) {
+        if (request.getFeedbackId() == null || request.getFeedbackId().isBlank()) {
             return "feedbackId is null or empty";
         }
 
-        return service.sendNotification(feedbackId);
+        return service.sendNotification(request.getFeedbackId());
     }
 
 }

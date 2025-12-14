@@ -1,6 +1,7 @@
 package br.com.feedsync.FeedSync.controller;
 
 
+import br.com.feedsync.FeedSync.controller.docs.UserControllerDoc;
 import br.com.feedsync.FeedSync.dto.UserRequest;
 import br.com.feedsync.FeedSync.dto.UserResponse;
 import br.com.feedsync.FeedSync.entity.User;
@@ -16,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController implements UserControllerDoc {
 
     private final UserService service;
     private final UserMapper mapper;
@@ -43,9 +44,7 @@ public class UserController {
 
 
     @GetMapping
-    ResponseEntity<List<UserResponse>> findAllUsers(
-            @RequestParam(required = false) Boolean active
-    ) {
+    public ResponseEntity<List<UserResponse>> findAllUsers(@RequestParam(required = false) Boolean active) {
         var result = service.findAll(active);
         return ResponseEntity.ok(mapper.toResponseList(result));
     }
@@ -55,7 +54,7 @@ public class UserController {
             @PathVariable String id
     ) {
         service.deleteUserById(id);
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{userId}/enroll/{courseId}")
