@@ -34,7 +34,7 @@ public class FirebaseConfig {
                 options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(
                                 getClass().getResourceAsStream("/firebase-service-key.json")))
-                        .setDatabaseUrl("https://feedsync-teste-local-3a1c2.firebaseio.com")
+                        .setProjectId("feedsync-uat")
                         .build();
 
                 FirebaseApp.initializeApp(options);

@@ -34,3 +34,6 @@ build/
 
 ### Trash ###
 *.log
+
+### keys ###
+**/firebase-service-key.json

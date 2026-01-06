@@ -12,15 +12,23 @@ import java.io.InputStream;
 public class FirebaseConfig {
 
     private static Firestore firestoreInstance;
+    private static final Object lock = new Object();
 
     public static Firestore getFirestore() throws IOException {
         if (firestoreInstance == null) {
-            initFirebase();
+            synchronized (lock) {
+                if (firestoreInstance == null) {
+                    initFirebase();
+                }
+            }
         }
         return firestoreInstance;
     }
 
     private static void initFirebase() throws IOException {
+
+        FirebaseApp app;
+
         if (FirebaseApp.getApps().isEmpty()) {
 
             String emulatorHost = System.getenv("FIRESTORE_EMULATOR_HOST");
@@ -28,30 +36,36 @@ public class FirebaseConfig {
             FirebaseOptions options;
 
             if (emulatorHost != null && !emulatorHost.isEmpty()) {
-                // modo EMULADOR
                 options = FirebaseOptions.builder()
                         .setProjectId("feedsync-teste-local-3a1c2")
                         .setCredentials(GoogleCredentials.create(null))
                         .build();
 
-                FirebaseApp.initializeApp(options);
-                System.out.println("Firebase inicializado no modo EMULADOR!");
+                app = FirebaseApp.initializeApp(options);
+                System.out.println("Firebase EMULADOR inicializado");
+
             } else {
-                // modo PRODUÇÃO
-                InputStream serviceAccount = FirebaseConfig.class
-                        .getResourceAsStream("/firebase-service-key.json");
+                InputStream serviceAccount =
+                        FirebaseConfig.class.getResourceAsStream("/firebase-service-key.json");
+
+                if (serviceAccount == null) {
+                    throw new RuntimeException("firebase-service-key.json não encontrado no classpath");
+                }
 
                 options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                        .setDatabaseUrl("https://feedsync-teste-local-3a1c2.firebaseio.com")
+                        .setProjectId("feedsync-uat")
                         .build();
 
-                FirebaseApp.initializeApp(options);
-                System.out.println("Firebase inicializado no modo PRODUÇÃO!");
+                app = FirebaseApp.initializeApp(options);
+                System.out.println("Firebase PRODUÇÃO inicializado");
             }
 
-            firestoreInstance = FirestoreClient.getFirestore();
-            System.out.println("Firestore conectado com sucesso: " + firestoreInstance);
+        } else {
+            app = FirebaseApp.getInstance();
         }
+
+        firestoreInstance = FirestoreClient.getFirestore(app);
+        System.out.println("Firestore conectado: " + firestoreInstance);
     }
 }
