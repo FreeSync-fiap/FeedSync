@@ -1,0 +1,11 @@
+FROM maven:3.9-eclipse-temurin-21-alpine AS runner
+
+WORKDIR /app
+
+COPY ./report-service/pom.xml ./
+COPY ./report-service/src ./src
+
+RUN mvn dependency:go-offline
+
+EXPOSE 8080
+CMD ["mvn", "function:run", "-Drun.functionTarget=br.com.feedsync.functions.report_service.ReportServiceApplication"]

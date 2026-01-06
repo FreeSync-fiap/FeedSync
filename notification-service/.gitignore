@@ -31,9 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### Trash ###
-*.log
-
-### keys ###
-**/firebase-service-key.json

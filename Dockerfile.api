@@ -2,11 +2,11 @@ FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /build
 
-COPY ./pom.xml ./
+COPY ./feedsync-api/pom.xml ./
 
 RUN mvn dependency:go-offline
 
-COPY ./src ./src
+COPY ./feedsync-api/src ./src
 
 RUN mvn clean install -DskipTests
 
@@ -21,3 +21,4 @@ RUN mkdir -p /app/logs
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
